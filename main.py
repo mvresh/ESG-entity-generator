@@ -8,20 +8,18 @@ import os
 import shortuuid
 
 def INITCALL():
-    df_Region_LA_buildings = pd.read_excel('Region_LA_buildings.xlsx')
-    df_district_data = pd.read_excel('ONSData6DistrictLevel.xlsx')
-    df_SIC_Codes = pd.read_csv('SIC07_CH_condensed_list_en.csv')
+    config.df_Region_LA_buildings = pd.read_excel('Region_LA_buildings.xlsx')
+    config.dfLA = config.df_Region_LA_buildings['Local Authority'].dropna()
+    config.df_Region = config.df_Region_LA_buildings['Region'].dropna()
+    config.df_district_data = pd.read_excel('ONSData6DistrictLevel.xlsx')
+    config.df_SIC_Codes = pd.read_csv('SIC07_CH_condensed_list_en.csv')
     
-    dfLA = df_Region_LA_buildings['Local Authority'].dropna()
-    df_Region = df_Region_LA_buildings['Region'].dropna()
-    # dict_gen_Region_LA(df_Region,dfLA)
-
 
 def gen_Unique_Identity():
-    print('Unique ID : ',shortuuid.ShortUUID().random(length=10))
+    print('Unique ID : ',shortuuid.ShortUUID().random(length=16))
 
-def gen_Region_LA(df_Region,dfLA):
-    
+def gen_Region_LA_GeoCode(df_Region,dfLA):
+
     for Region_row in df_Region:
         config.Regions_and_LA[Region_row] = []
     
@@ -36,10 +34,28 @@ def gen_Region_LA(df_Region,dfLA):
                 else:
                     config.Regions_and_LA[list(config.Regions_and_LA)[Region_index]].append(row)
 
-def gen_SIC_Sector_Description():
-    df_district_data = pd.read_excel('ONSData6DistrictLevel.xlsx')
-    df_SIC_Codes = pd.read_csv('SIC07_CH_condensed_list_en.csv')
+    # random choice probability array
+    prob_array_region = [
+                        float(57413/1362789), 
+                        float(177575/1362789), 
+                        float(139401/1362789),
+                        float(109150/1362789),
+                        float(132905/1362789), 
+                        float(134827/1362789),
+                        float(203453/1362789),
+                        float(193711/1362789), 
+                        float(135657/1362789),
+                        float(78697/1362789)
+                        ]
+    Final_Region = np.random.choice(list(config.Regions_and_LA.keys()), p=prob_array_region)
+    print('Company Region : ' ,Final_Region)
+    Final_County = np.random.choice(config.Regions_and_LA[Final_Region])
+    print('Company LA / County : ',Final_County)
+    Final_GeoCode = config.df_district_data['Code'].where(config.df_district_data['County']==Final_County).dropna().values
+    print('Company Geographic Code : ',Final_GeoCode)
 
+def gen_SIC_Sector_Description(df_district_data,df_SIC_Codes):
+    
 
     row = df_district_data[df_district_data['County'] == 'County Durham']
     
@@ -76,7 +92,7 @@ def gen_SIC_Sector_Description():
         int(sic_range.split(':')[0].split('-')[0]),
         int(sic_range.split(':')[0].split('-')[1])
         ))
-    print(sic_range)
+    # print(sic_range)
     sic_range = [element * 1000 for element in sic_range]
   
     sampled_sicCodes = df_SIC_Codes[df_SIC_Codes['SIC Code'].between(sic_range[0],sic_range[len(sic_range)-1]+999)]
@@ -84,7 +100,11 @@ def gen_SIC_Sector_Description():
     Final_sic_code = sampled_sicCodes.sample()
     
     # Company Sic code And description
-    print('Company Final_sic_code : ',Final_sic_code['SIC Code'].values)
+    print('Company SIC Code : ',Final_sic_code['SIC Code'].values)
     print('Company Description : ',Final_sic_code['Description'].values)
 
-gen_SIC_Sector_Description()
+
+gen_Unique_Identity()
+INITCALL()
+gen_Region_LA_GeoCode(config.df_Region,config.dfLA)
+gen_SIC_Sector_Description(config.df_district_data,config.df_SIC_Codes)
