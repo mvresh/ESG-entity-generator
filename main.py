@@ -7,32 +7,50 @@ import numpy as np
 import os
 import shortuuid
 
-def INITCALL():
+
+def init():  
     config.df_Region_LA_buildings = pd.read_excel('Region_LA_buildings.xlsx')
     config.dfLA = config.df_Region_LA_buildings['Local Authority'].dropna()
     config.df_Region = config.df_Region_LA_buildings['Region'].dropna()
     config.df_district_data = pd.read_excel('ONSData6DistrictLevel.xlsx')
     config.df_SIC_Codes = pd.read_csv('SIC07_CH_condensed_list_en.csv')
+    dictionary_Region_LA(config.df_Region,config.dfLA)
+    empty_var = []
+    config.Final_dataframe = pd.DataFrame(empty_var, columns = ['Unique ID', 'Region','Local Authority','Geographic Code','Sector','SIC Code','Description'])
+    
     
 
 def gen_Unique_Identity():
-    print('Unique ID : ',shortuuid.ShortUUID().random(length=16))
+    UUID = shortuuid.ShortUUID().random(length=16)
+    # print('Unique ID : ',UUID)
+    config.generated_data_row['Unique ID'] = UUID
 
-def gen_Region_LA_GeoCode(df_Region,dfLA):
-
+def dictionary_Region_LA(df_Region,dfLA):
     for Region_row in df_Region:
         config.Regions_and_LA[Region_row] = []
-    
-    for Region_index in range(len(df_Region.index)):
-        if (Region_index+1 < len(df_Region.index)):
+
+    for Region_index in range(len(df_Region.index)+1):
+        
+        if (Region_index+1 <= len(df_Region.index)):
             # print("START loc :", df_Region.index[Region_index])
             # print("END loc :" ,df_Region.index[Region_index+1])
-            df_dict = dfLA.loc[df_Region.index[Region_index]:df_Region.index[Region_index+1]]
-            for row in df_dict:
-                if config.Regions_and_LA[list(config.Regions_and_LA)[Region_index]] == '':
-                    config.Regions_and_LA[list(config.Regions_and_LA)[Region_index]] = row
-                else:
-                    config.Regions_and_LA[list(config.Regions_and_LA)[Region_index]].append(row)
+            if (Region_index+1 != len(df_Region.index)):
+                df_dict = dfLA.loc[df_Region.index[Region_index]:df_Region.index[Region_index+1]]
+                for row in df_dict:
+                    if config.Regions_and_LA[list(config.Regions_and_LA)[Region_index]] == '':
+                        config.Regions_and_LA[list(config.Regions_and_LA)[Region_index]] = row
+                    else:
+                        config.Regions_and_LA[list(config.Regions_and_LA)[Region_index]].append(row)
+            else:
+                df_dict = dfLA.loc[df_Region.index[Region_index]:368]
+                for row in df_dict:
+                    if config.Regions_and_LA[list(config.Regions_and_LA)[Region_index]] == '':
+                        config.Regions_and_LA[list(config.Regions_and_LA)[Region_index]] = row
+                    else:
+                        config.Regions_and_LA[list(config.Regions_and_LA)[Region_index]].append(row)
+
+def gen_Region_LA_GeoCode():
+    
 
     # random choice probability array
     prob_array_region = [
@@ -48,11 +66,19 @@ def gen_Region_LA_GeoCode(df_Region,dfLA):
                         float(78697/1362789)
                         ]
     Final_Region = np.random.choice(list(config.Regions_and_LA.keys()), p=prob_array_region)
-    print('Company Region : ' ,Final_Region)
+    # print('Company Region : ' ,Final_Region)
+    # Append Final_Region to Data Row
+    config.generated_data_row['Region'] = Final_Region
+
     Final_County = np.random.choice(config.Regions_and_LA[Final_Region])
-    print('Company LA / County : ',Final_County)
-    Final_GeoCode = config.df_district_data['Code'].where(config.df_district_data['County']==Final_County).dropna().values
-    print('Company Geographic Code : ',Final_GeoCode)
+    # print('Company LA / County : ',Final_County)
+    # Append Final_Region to Data Row
+    config.generated_data_row['Local Authority'] = Final_County
+
+    Final_GeoCode = config.df_district_data['Code'].where(config.df_district_data['County']==Final_County).dropna().item()
+    # print('Company Geographic Code : ',Final_GeoCode)
+    # Append Final_Region to Data Row
+    config.generated_data_row['Geographic Code'] = Final_GeoCode
 
 def gen_SIC_Sector_Description(df_district_data,df_SIC_Codes):
     
@@ -83,28 +109,63 @@ def gen_SIC_Sector_Description(df_district_data,df_SIC_Codes):
 
     #SIC selected according to row input (row was selected by location)
     sic_range = np.random.choice(listOfSICS, p=probabilityArray)
-
     # Company Sector
-    print('Company Sector : ',sic_range.split(':')[1])
-
-    # creating an array of sic code to search into sic code list
-    sic_range = list(range(
-        int(sic_range.split(':')[0].split('-')[0]),
-        int(sic_range.split(':')[0].split('-')[1])
-        ))
-    # print(sic_range)
-    sic_range = [element * 1000 for element in sic_range]
-  
-    sampled_sicCodes = df_SIC_Codes[df_SIC_Codes['SIC Code'].between(sic_range[0],sic_range[len(sic_range)-1]+999)]
+    Final_Sector = sic_range.split(':')[1]
+    # print('Company Sector : ',Final_Sector)
+    config.generated_data_row['Sector'] = Final_Sector
     
+    if '-' in sic_range.split(':')[0]:
+    # creating an array of sic code to search into sic code list
+        sic_range = list(range(
+            int(sic_range.split(':')[0].split('-')[0]),
+            int(sic_range.split(':')[0].split('-')[1])
+            ))
+    else:
+        sic_range = [int(sic_range.split(':')[0])]
+    
+
+    sic_range = [element * 1000 for element in sic_range]
+    if len(sic_range) > 1:
+        sampled_sicCodes = df_SIC_Codes[df_SIC_Codes['SIC Code'].between(sic_range[0],sic_range[len(sic_range)-1]+999)]
+    else:
+        sampled_sicCodes = df_SIC_Codes[df_SIC_Codes['SIC Code'].between(sic_range[0],sic_range[0]+999)]
+
     Final_sic_code = sampled_sicCodes.sample()
     
     # Company Sic code And description
-    print('Company SIC Code : ',Final_sic_code['SIC Code'].values)
-    print('Company Description : ',Final_sic_code['Description'].values)
+    # print('Company SIC Code : ',Final_sic_code['SIC Code'].values)
+    config.generated_data_row['SIC Code'] = Final_sic_code['SIC Code'].item()
+
+    # print('Company Description : ',Final_sic_code['Description'].values)
+    config.generated_data_row['Description'] =  Final_sic_code['Description'].item()
 
 
-gen_Unique_Identity()
-INITCALL()
-gen_Region_LA_GeoCode(config.df_Region,config.dfLA)
-gen_SIC_Sector_Description(config.df_district_data,config.df_SIC_Codes)
+init()
+
+# import the library
+from appJar import gui
+import time
+
+# create a GUI variable called app
+app = gui()
+app.addLabelEntry("Enter Number of Records Required")
+
+def press(button):
+    val = app.getEntry("Enter Number of Records Required")
+    for i in range(int(val)):
+        gen_Unique_Identity()
+        gen_Region_LA_GeoCode()
+        gen_SIC_Sector_Description(config.df_district_data,config.df_SIC_Codes)
+        # Create the pandas DataFrame
+        config.Final_dataframe = config.Final_dataframe.append(config.generated_data_row, ignore_index=True)
+        config.Final_dataframe.to_excel('ESG-generated-data.xlsx')
+
+    app.addLabel("Records Created")
+    # time.sleep(2) # Sleep for 3 seconds
+    app.stop()
+
+app.addButtons(["Submit"], press)
+app.go()
+
+
+
