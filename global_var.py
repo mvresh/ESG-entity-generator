@@ -29,21 +29,4 @@ prob_array_region = [
                     float(78697/1362789)
                     ]
 
-#init probability array
-probabilityArraySIC = [float(row[row.keys()[10]]/row['Total']), 
-                    float(row[row.keys()[11]]/row['Total']), 
-                    float(row[row.keys()[12]]/row['Total']), 
-                    float(row[row.keys()[13]]/row['Total']), 
-                    float(row[row.keys()[14]]/row['Total']), 
-                    float(row[row.keys()[15]]/row['Total']), 
-                    float(row[row.keys()[16]]/row['Total']), 
-                    float(row[row.keys()[17]]/row['Total']), 
-                    float(row[row.keys()[18]]/row['Total']), 
-                    float(row[row.keys()[19]]/row['Total']), 
-                    float(row[row.keys()[20]]/row['Total']), 
-                    float(row[row.keys()[21]]/row['Total']), 
-                    float(row[row.keys()[22]]/row['Total']), 
-                    float(row[row.keys()[23]]/row['Total']), 
-                    float(row[row.keys()[24]]/row['Total']), 
-                    float(row[row.keys()[25]]/row['Total']), 
-                    float(row[row.keys()[26]]/row['Total'])]
+prob_array_structure = {}
