@@ -30,3 +30,9 @@ prob_array_region = [
                     ]
 
 prob_array_structure = {}
+
+# Consumption by floor area array
+consumption_array = []
+
+# Petrol consumption predicted value array
+ptrl_consumption_sector_arr = {}

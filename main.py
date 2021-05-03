@@ -4,6 +4,7 @@ from numpy.testing._private.nosetester import run_module_suite
 import global_var
 import pandas as pd
 import numpy as np
+import petrol
 import os
 import shortuuid
 # ? Library for GUI
@@ -28,7 +29,7 @@ class Entity:
         self.probability_array_all()
 
         empty_var = []
-        global_var.Final_dataframe = pd.DataFrame(empty_var, columns = ['Unique ID', 'Region','Local Authority','Geographic Code','Sector','SIC Code','Description'])
+        global_var.Final_dataframe = pd.DataFrame(empty_var, columns = ['Unique ID', 'Region','Local Authority','Geographic Code','Sector','SIC Code','Section','SIC Group','Description'])
         print('initial data loaded successfully.')
     
     # * * ----------------------------------------------------------------------- * * #
@@ -86,16 +87,17 @@ class Entity:
             val = app.getEntry("Enter Number of Records Required")
             app.stop()           
             for i in tqdm(range(int(val))):
-                Entity_Obj.gen_Unique_Identity()
-                Entity_Obj.gen_Region_LA_GeoCode()
-                Entity_Obj.gen_SIC_Sector_Description(global_var.df_district_data,global_var.df_SIC_Codes)
-                Entity_Obj.gen_structure()
+                self.gen_Unique_Identity()
+                self.gen_Region_LA_GeoCode()
+                self.gen_SIC_Sector_Description(global_var.df_district_data,global_var.df_SIC_Codes)
+                petrol.gen_prediction_arr_petrol()
+                # TODO: self.gen_structure() // Generate Structure type
                 # Create the pandas DataFrame
                 global_var.Final_dataframe = global_var.Final_dataframe.append(global_var.generated_data_row, ignore_index=True)
             
-                #Writing Dataframe into Excel file
-                global_var.Final_dataframe.to_excel('ESG-generated-data.xlsx')
                 print("",end = '\r')
+            #Writing Dataframe into Excel file
+            global_var.Final_dataframe.to_excel('ESG-generated-data.xlsx')
 
             # for i in range(int(val)):
 
@@ -175,6 +177,10 @@ class Entity:
         Final_Sector = sic_range.split(':')[1]
         # print('Company Sector : ',Final_Sector)
         global_var.generated_data_row['Sector'] = Final_Sector
+
+        # Company Sic Group
+        Final_SicGroup = sic_range.split(':')[0]
+        global_var.generated_data_row['SIC Group'] = Final_SicGroup
         
         if '-' in sic_range.split(':')[0]:
         # creating an array of sic code to search into sic code list
@@ -184,7 +190,6 @@ class Entity:
                 ))
         else:
             sic_range = [int(sic_range.split(':')[0])]
-        
 
         sic_range = [element * 1000 for element in sic_range]
         if len(sic_range) > 1:
@@ -193,10 +198,13 @@ class Entity:
             sampled_sicCodes = df_SIC_Codes[df_SIC_Codes['SIC Code'].between(sic_range[0],sic_range[0]+999)]
 
         Final_sic_code = sampled_sicCodes.sample()
-        
+
         # Company Sic code And description
         # print('Company SIC Code : ',Final_sic_code['SIC Code'].values)
         global_var.generated_data_row['SIC Code'] = Final_sic_code['SIC Code'].item()
+
+        # print('Company Section : ',Final_sic_code['Section'].values)
+        global_var.generated_data_row['Section'] =  Final_sic_code['Section'].item()
 
         # print('Company Description : ',Final_sic_code['Description'].values)
         global_var.generated_data_row['Description'] =  Final_sic_code['Description'].item()
@@ -215,6 +223,14 @@ Entity_Obj = Entity()
 
 # Calling Data generate funtion from class object
 Entity_Obj.generate_data_from_input()
+
+# print(global_var.df_Region_LA_buildings['Unnamed: 5'].where(global_var.df_Region_LA_buildings['Local Authority'].notnull()))
+
+# df_petrol = pd.read_excel('energyusebyindustrysourceandfuel.xls')
+# print(df_petrol['Industry group'].where((df_petrol['Activity Name']=='Petrol') & (df_petrol['SIC (07) group'] == 1)).dropna())
+
+# 
+
 
 
 
