@@ -22,3 +22,28 @@ Enter Number of Records required.
  'Unnamed: 20' 'Unnamed: 21' 'Unnamed: 22' 'Unnamed: 23'
  'All other sectors' 'Unnamed: 25' 'Unnamed: 26' 'Unnamed: 27'
  'Unnamed: 28' 'Total' 'Unnamed: 30' 'Unnamed: 31' 'Unnamed: 32']
+
+
+   # percentage_data = {
+        # 'Factory': 
+        # global_var.df_Region_LA_buildings['Factories'].where(global_var.df_Region_LA_buildings['Local Authority'].notnull()).dropna()/
+        # global_var.df_Region_LA_buildings['Total'].where(global_var.df_Region_LA_buildings['Local Authority'].notnull()).dropna().values,
+        
+        # 'Office': 
+        # global_var.df_Region_LA_buildings['Offices'].where(global_var.df_Region_LA_buildings['Local Authority'].notnull()).dropna()/
+        # global_var.df_Region_LA_buildings['Total'].where(global_var.df_Region_LA_buildings['Local Authority'].notnull()).dropna().values,
+        
+        # 'Shop' : 
+        # global_var.df_Region_LA_buildings['Shops'].where(global_var.df_Region_LA_buildings['Local Authority'].notnull()).dropna()/
+        # global_var.df_Region_LA_buildings['Total'].where(global_var.df_Region_LA_buildings['Local Authority'].notnull()).dropna().values,
+        
+        # 'Warehouse': 
+        # global_var.df_Region_LA_buildings['Warehouses'].where(global_var.df_Region_LA_buildings['Local Authority'].notnull()).dropna()/
+        # global_var.df_Region_LA_buildings['Total'].where(global_var.df_Region_LA_buildings['Local Authority'].notnull()).dropna().values,
+        
+        # 'Other': 
+        # global_var.df_Region_LA_buildings['All other sectors'].where(global_var.df_Region_LA_buildings['Local Authority'].notnull()).dropna()/
+        # global_var.df_Region_LA_buildings['Total'].where(global_var.df_Region_LA_buildings['Local Authority'].notnull()).dropna().values}
+
+        # df_structre_percentages = pd.DataFrame(percentage_data)
+        # df_structre_percentages = pd.concat([df_structre_percentages, global_var.df_Region_LA_buildings['Local Authority'].dropna()], axis=1)

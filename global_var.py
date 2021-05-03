@@ -7,6 +7,7 @@ df_district_data = ''
 df_SIC_Codes = ''
 dfLA = ''
 df_Region = ''
+df_per_structure_consumption = ''
 
 # Generated Data Row
 generated_data_row = {}
@@ -36,3 +37,5 @@ consumption_array = []
 
 # Petrol consumption predicted value array
 ptrl_consumption_sector_arr = {}
+NG_consumption_sector_arr = {}
+coal_consumption_sector_arr = {}

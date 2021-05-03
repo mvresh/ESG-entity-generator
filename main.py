@@ -1,10 +1,13 @@
 from numpy import random
-from numpy.core.arrayprint import StructuredVoidFormat
+from numpy.core.arrayprint import StructuredVoidFormat, printoptions
 from numpy.testing._private.nosetester import run_module_suite
 import global_var
 import pandas as pd
 import numpy as np
 import petrol
+import natural_gas
+import coal
+import electricity
 import os
 import shortuuid
 # ? Library for GUI
@@ -12,6 +15,13 @@ from appJar import gui
 # ? For Progressbar
 from tqdm.auto import tqdm
 import time
+import matplotlib.pyplot as plt
+
+ptrl_obj = petrol.Petrol()
+NG_obj = natural_gas.NG()
+coal_obj = coal.Coal()
+ele_obj = electricity.EG()
+
 
 class Entity:
     def __init__(self):
@@ -26,10 +36,14 @@ class Entity:
         global_var.df_district_data = pd.read_excel('ONSData6DistrictLevel.xlsx')
         global_var.df_SIC_Codes = pd.read_csv('SIC07_CH_condensed_list_en.csv')
         self.dictionary_Region_LA(global_var.df_Region,global_var.dfLA)
+        ptrl_obj.gen_prediction_arr_petrol()
+        NG_obj.gen_prediction_arr_NG()
+        coal_obj.gen_prediction_arr_coal()
+        ele_obj.gen_electricity_structural_consumption()
         self.probability_array_all()
 
         empty_var = []
-        global_var.Final_dataframe = pd.DataFrame(empty_var, columns = ['Unique ID', 'Region','Local Authority','Geographic Code','Sector','SIC Code','Section','SIC Group','Description'])
+        global_var.Final_dataframe = pd.DataFrame(empty_var, columns = ['Unique ID','Region','Local Authority','Geographic Code','Section','SIC Group','Sector','Structure_Type','Petrol_Consumption_By_Sector','NG_Consumption_By_Sector','Coal_Consumption_By_Sector','Electricity_Consumption_By_Structure'])
         print('initial data loaded successfully.')
     
     # * * ----------------------------------------------------------------------- * * #
@@ -90,29 +104,18 @@ class Entity:
                 self.gen_Unique_Identity()
                 self.gen_Region_LA_GeoCode()
                 self.gen_SIC_Sector_Description(global_var.df_district_data,global_var.df_SIC_Codes)
-                petrol.gen_prediction_arr_petrol()
-                # TODO: self.gen_structure() // Generate Structure type
+                self.gen_petrol_consumption()
+                self.gen_NG_consumption()
+                self.gen_coal_consumption()
+                self.gen_structure() 
+                self.gen_electricity_consumption()
                 # Create the pandas DataFrame
                 global_var.Final_dataframe = global_var.Final_dataframe.append(global_var.generated_data_row, ignore_index=True)
             
                 print("",end = '\r')
             #Writing Dataframe into Excel file
             global_var.Final_dataframe.to_excel('ESG-generated-data.xlsx')
-
-            # for i in range(int(val)):
-
-            #     print('Number of Records Generated : ',i,'\n')
-            #     Entity_Obj.gen_Unique_Identity()
-            #     Entity_Obj.gen_Region_LA_GeoCode()
-            #     Entity_Obj.gen_SIC_Sector_Description(global_var.df_district_data,global_var.df_SIC_Codes)
-            #     Entity_Obj.gen_structure()
-            #     # Create the pandas DataFrame
-            #     global_var.Final_dataframe = global_var.Final_dataframe.append(global_var.generated_data_row, ignore_index=True)
-            
-            # #Writing Dataframe into Excel file
-            # print('Writing to Excel')
-            # global_var.Final_dataframe.to_excel('ESG-generated-data.xlsx')
-            
+           
         app.addButtons(["Submit"], press)
         app.go()
     
@@ -201,13 +204,13 @@ class Entity:
 
         # Company Sic code And description
         # print('Company SIC Code : ',Final_sic_code['SIC Code'].values)
-        global_var.generated_data_row['SIC Code'] = Final_sic_code['SIC Code'].item()
+        # TODO: global_var.generated_data_row['SIC Code'] = Final_sic_code['SIC Code'].item()
 
         # print('Company Section : ',Final_sic_code['Section'].values)
         global_var.generated_data_row['Section'] =  Final_sic_code['Section'].item()
 
         # print('Company Description : ',Final_sic_code['Description'].values)
-        global_var.generated_data_row['Description'] =  Final_sic_code['Description'].item()
+         # TODO: global_var.generated_data_row['Description'] =  Final_sic_code['Description'].item()
     
     # * * ----------------------------------------------------------------------- * * #
     
@@ -218,18 +221,34 @@ class Entity:
 
     # * * ----------------------------------------------------------------------- * * #
   
+    def gen_petrol_consumption(self): # //! Petrol
+        global_var.generated_data_row['Petrol_Consumption_By_Sector'] = np.random.choice(global_var.ptrl_consumption_sector_arr[global_var.generated_data_row['Section']])
+        
+    # * * ----------------------------------------------------------------------- * * #
+
+    def gen_NG_consumption(self): # //! Natural Gas
+        global_var.generated_data_row['NG_Consumption_By_Sector'] = np.random.choice(global_var.NG_consumption_sector_arr[global_var.generated_data_row['Section']])
+       
+    # * * ----------------------------------------------------------------------- * * #
+                
+    def gen_coal_consumption(self): # //! Coal
+        global_var.generated_data_row['Coal_Consumption_By_Sector'] = np.random.choice(global_var.coal_consumption_sector_arr[global_var.generated_data_row['Section']])
+       
+    # * * ----------------------------------------------------------------------- * * #
+
+    def gen_electricity_consumption(self): # //! Electricity
+        x = global_var.df_per_structure_consumption['consumption_per_structure'][(global_var.df_per_structure_consumption['County'] == global_var.generated_data_row['Local Authority']) &
+        (global_var.df_per_structure_consumption['Structure'] == global_var.generated_data_row['Structure_Type'])].values
+        global_var.generated_data_row['Electricity_Consumption_By_Structure'] = np.random.normal(loc=x, scale=x*10/100, size=1).item()   
+            
+    # * * ----------------------------------------------------------------------- * * #
+
 # Creating Class object for Entity ... Init will be called
 Entity_Obj = Entity()
 
 # Calling Data generate funtion from class object
 Entity_Obj.generate_data_from_input()
 
-# print(global_var.df_Region_LA_buildings['Unnamed: 5'].where(global_var.df_Region_LA_buildings['Local Authority'].notnull()))
-
-# df_petrol = pd.read_excel('energyusebyindustrysourceandfuel.xls')
-# print(df_petrol['Industry group'].where((df_petrol['Activity Name']=='Petrol') & (df_petrol['SIC (07) group'] == 1)).dropna())
-
-# 
 
 
 
