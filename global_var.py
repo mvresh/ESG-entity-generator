@@ -8,6 +8,8 @@ df_SIC_Codes = ''
 dfLA = ''
 df_Region = ''
 df_per_structure_consumption = ''
+df_per_structure_Gas_consumption = ''
+df_EG = ''
 
 # Generated Data Row
 generated_data_row = {}

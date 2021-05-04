@@ -1,13 +1,17 @@
 from numpy import random
 from numpy.core.arrayprint import StructuredVoidFormat, printoptions
 from numpy.testing._private.nosetester import run_module_suite
-import global_var
+
 import pandas as pd
 import numpy as np
+
+import global_var
 import petrol
 import natural_gas
 import coal
 import electricity
+import gas
+
 import os
 import shortuuid
 # ? Library for GUI
@@ -21,6 +25,7 @@ ptrl_obj = petrol.Petrol()
 NG_obj = natural_gas.NG()
 coal_obj = coal.Coal()
 ele_obj = electricity.EG()
+gas_obj = gas.Gas()
 
 
 class Entity:
@@ -35,15 +40,30 @@ class Entity:
         global_var.df_Region = global_var.df_Region_LA_buildings['Region'].dropna()
         global_var.df_district_data = pd.read_excel('ONSData6DistrictLevel.xlsx')
         global_var.df_SIC_Codes = pd.read_csv('SIC07_CH_condensed_list_en.csv')
+        global_var.df_EG = pd.read_excel('electricity and gas consumption by Local authority.xlsx')
+
         self.dictionary_Region_LA(global_var.df_Region,global_var.dfLA)
         ptrl_obj.gen_prediction_arr_petrol()
         NG_obj.gen_prediction_arr_NG()
         coal_obj.gen_prediction_arr_coal()
         ele_obj.gen_electricity_structural_consumption()
+        gas_obj.gen_Gas_structural_consumption()
         self.probability_array_all()
 
         empty_var = []
-        global_var.Final_dataframe = pd.DataFrame(empty_var, columns = ['Unique ID','Region','Local Authority','Geographic Code','Section','SIC Group','Sector','Structure_Type','Petrol_Consumption_By_Sector','NG_Consumption_By_Sector','Coal_Consumption_By_Sector','Electricity_Consumption_By_Structure'])
+        global_var.Final_dataframe = pd.DataFrame(empty_var, columns = ['Unique ID',
+        'Region',
+        'Local Authority',
+        'Geographic Code',
+        'Section',
+        'SIC Group',
+        'Sector','Structure_Type',
+        'Petrol_Consumption_By_Sector',
+        'NG_Consumption_By_Sector',
+        'Coal_Consumption_By_Sector',
+        'Electricity_Consumption_By_Structure',
+        'Gas_Consumption_By_Structure'])
+
         print('initial data loaded successfully.')
     
     # * * ----------------------------------------------------------------------- * * #
@@ -109,6 +129,8 @@ class Entity:
                 self.gen_coal_consumption()
                 self.gen_structure() 
                 self.gen_electricity_consumption()
+                self.gen_gas_consumption()
+                
                 # Create the pandas DataFrame
                 global_var.Final_dataframe = global_var.Final_dataframe.append(global_var.generated_data_row, ignore_index=True)
             
@@ -240,6 +262,13 @@ class Entity:
         x = global_var.df_per_structure_consumption['consumption_per_structure'][(global_var.df_per_structure_consumption['County'] == global_var.generated_data_row['Local Authority']) &
         (global_var.df_per_structure_consumption['Structure'] == global_var.generated_data_row['Structure_Type'])].values
         global_var.generated_data_row['Electricity_Consumption_By_Structure'] = np.random.normal(loc=x, scale=x*10/100, size=1).item()   
+            
+    # * * ----------------------------------------------------------------------- * * #
+
+    def gen_gas_consumption(self): # //! Gas
+        x = global_var.df_per_structure_Gas_consumption['consumption_per_structure'][(global_var.df_per_structure_Gas_consumption['County'] == global_var.generated_data_row['Local Authority']) &
+        (global_var.df_per_structure_Gas_consumption['Structure'] == global_var.generated_data_row['Structure_Type'])].values
+        global_var.generated_data_row['Gas_Consumption_By_Structure'] = np.random.normal(loc=x, scale=x*10/100, size=1).item()   
             
     # * * ----------------------------------------------------------------------- * * #
 
