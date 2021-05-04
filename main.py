@@ -57,14 +57,49 @@ class Entity:
         'Geographic Code',
         'Section',
         'SIC Group',
-        'Sector','Structure_Type',
-        'Petrol_Consumption_By_Sector',
-        'NG_Consumption_By_Sector',
-        'Coal_Consumption_By_Sector',
+        'Sector',
+        'Structure_Type',
+        'Petrol_Consumption_By_Sector(toe)',
+        'NG_Consumption_By_Sector(toe)',
+        'Coal_Consumption_By_Sector(toe)',
         'Electricity_Consumption_By_Structure',
         'Gas_Consumption_By_Structure'])
 
         print('initial data loaded successfully.')
+    
+    # * * ----------------------------------------------------------------------- * * #
+
+    def generate_data_from_input(self): # //! MAiN Generator Function
+        # create a GUI variable called app
+        app = gui()
+        app.addLabelEntry("Enter Number of Records Required")
+        def press(button):
+            val = app.getEntry("Enter Number of Records Required")
+            app.stop()           
+            for i in tqdm(range(int(val))):
+                self.gen_Unique_Identity()
+                self.gen_Region_LA_GeoCode()
+                self.gen_SIC_Sector_Description(global_var.df_district_data,global_var.df_SIC_Codes)
+                self.gen_structure() 
+                
+                self.gen_petrol_consumption()
+                self.gen_NG_consumption()
+                self.gen_coal_consumption()
+                
+                self.gen_electricity_consumption()
+                self.gen_gas_consumption()
+                
+                # Create the pandas DataFrame
+                global_var.Final_dataframe = global_var.Final_dataframe.append(global_var.generated_data_row, ignore_index=True)
+            
+                print("",end = '\r')
+
+            #Writing Dataframe into Excel file
+            global_var.Final_dataframe.to_excel('ESG-generated-data.xlsx')
+            
+           
+        app.addButtons(["Submit"], press)
+        app.go()
     
     # * * ----------------------------------------------------------------------- * * #
 
@@ -95,14 +130,14 @@ class Entity:
     # * * ----------------------------------------------------------------------- * * #
 
     def probability_array_all(self): # //! Probabiltiy Dictionary Creation
-        region = global_var.df_Region_LA_buildings['Region'].dropna().values
-        for i in region:
-            Total_numberofbuildings = global_var.df_Region_LA_buildings[global_var.df_Region_LA_buildings['Region'] == i]['Unnamed: 31'].item()
-            per_structure_count = [global_var.df_Region_LA_buildings[global_var.df_Region_LA_buildings['Region'] == i]['Unnamed: 6'].item(),
-                                    global_var.df_Region_LA_buildings[global_var.df_Region_LA_buildings['Region'] == i]['Unnamed: 11'].item(),
-                                    global_var.df_Region_LA_buildings[global_var.df_Region_LA_buildings['Region'] == i]['Unnamed: 16'].item(),
-                                    global_var.df_Region_LA_buildings[global_var.df_Region_LA_buildings['Region'] == i]['Unnamed: 21'].item(),
-                                    global_var.df_Region_LA_buildings[global_var.df_Region_LA_buildings['Region'] == i]['Unnamed: 26'].item()]
+        Local_Authority = global_var.df_Region_LA_buildings['Local Authority'].dropna().values
+        for i in Local_Authority:
+            Total_numberofbuildings = global_var.df_Region_LA_buildings[global_var.df_Region_LA_buildings['Local Authority'] == i]['Unnamed: 31'].item()
+            per_structure_count = [global_var.df_Region_LA_buildings[global_var.df_Region_LA_buildings['Local Authority'] == i]['Unnamed: 6'].item(),
+                                    global_var.df_Region_LA_buildings[global_var.df_Region_LA_buildings['Local Authority'] == i]['Unnamed: 11'].item(),
+                                    global_var.df_Region_LA_buildings[global_var.df_Region_LA_buildings['Local Authority'] == i]['Unnamed: 16'].item(),
+                                    global_var.df_Region_LA_buildings[global_var.df_Region_LA_buildings['Local Authority'] == i]['Unnamed: 21'].item(),
+                                    global_var.df_Region_LA_buildings[global_var.df_Region_LA_buildings['Local Authority'] == i]['Unnamed: 26'].item()]
 
             # print(global_var.df_Region_LA_buildings[global_var.df_Region_LA_buildings['Region'] == 'North East'][['Unnamed: 6','Unnamed: 11','Unnamed: 16','Unnamed: 21','Unnamed: 26','Unnamed: 31']])
             global_var.prob_array_structure[i] =  [float(per_structure_count[0]/Total_numberofbuildings), 
@@ -111,36 +146,6 @@ class Entity:
                             float(per_structure_count[3]/Total_numberofbuildings),
                             float(per_structure_count[4]/Total_numberofbuildings)]
 
-    # * * ----------------------------------------------------------------------- * * #
-
-    def generate_data_from_input(self): # //! MAiN Generator Function
-        # create a GUI variable called app
-        app = gui()
-        app.addLabelEntry("Enter Number of Records Required")
-        def press(button):
-            val = app.getEntry("Enter Number of Records Required")
-            app.stop()           
-            for i in tqdm(range(int(val))):
-                self.gen_Unique_Identity()
-                self.gen_Region_LA_GeoCode()
-                self.gen_SIC_Sector_Description(global_var.df_district_data,global_var.df_SIC_Codes)
-                self.gen_petrol_consumption()
-                self.gen_NG_consumption()
-                self.gen_coal_consumption()
-                self.gen_structure() 
-                self.gen_electricity_consumption()
-                self.gen_gas_consumption()
-                
-                # Create the pandas DataFrame
-                global_var.Final_dataframe = global_var.Final_dataframe.append(global_var.generated_data_row, ignore_index=True)
-            
-                print("",end = '\r')
-            #Writing Dataframe into Excel file
-            global_var.Final_dataframe.to_excel('ESG-generated-data.xlsx')
-           
-        app.addButtons(["Submit"], press)
-        app.go()
-    
     # * * ----------------------------------------------------------------------- * * #
 
     def gen_Unique_Identity(self): # //! Unique ID
@@ -237,25 +242,127 @@ class Entity:
     # * * ----------------------------------------------------------------------- * * #
     
     def gen_structure(self): # //! Struture Type
-        Final_Structure = np.random.choice(['Factory','Office','Shop','Warehouse','Other'], p=global_var.prob_array_structure[global_var.generated_data_row['Region'].item()])
+        Final_Structure = np.random.choice(['Factory','Office','Shop','Warehouse','Other'], p=global_var.prob_array_structure[global_var.generated_data_row['Local Authority'].item()])
         # Append Final_Structure to Data Row
         global_var.generated_data_row['Structure_Type'] = Final_Structure 
 
     # * * ----------------------------------------------------------------------- * * #
   
     def gen_petrol_consumption(self): # //! Petrol
-        global_var.generated_data_row['Petrol_Consumption_By_Sector'] = np.random.choice(global_var.ptrl_consumption_sector_arr[global_var.generated_data_row['Section']])
-        
+
+        x = global_var.ptrl_consumption_sector_arr[global_var.generated_data_row['Section']]
+        x = np.random.choice(x)
+        y = ''
+        if global_var.generated_data_row['Structure_Type'] == 'Factory':
+            percentage_of_consumption = x *  global_var.prob_array_structure[global_var.generated_data_row['Local Authority'].item()][0] /100
+            per_structure_consumption = percentage_of_consumption / global_var.df_Region_LA_buildings['Unnamed: 6'].where(
+                global_var.df_Region_LA_buildings['Local Authority'] == global_var.generated_data_row['Local Authority']).dropna().item()
+
+        elif  global_var.generated_data_row['Structure_Type'] == 'Office':
+            percentage_of_consumption = x *  global_var.prob_array_structure[global_var.generated_data_row['Local Authority'].item()][1] /100
+            per_structure_consumption = percentage_of_consumption / global_var.df_Region_LA_buildings['Unnamed: 11'].where(
+                global_var.df_Region_LA_buildings['Local Authority'] == global_var.generated_data_row['Local Authority']).dropna().item()
+
+        elif  global_var.generated_data_row['Structure_Type'] == 'Shop':
+            percentage_of_consumption = x *  global_var.prob_array_structure[global_var.generated_data_row['Local Authority'].item()][2] /100
+            per_structure_consumption = percentage_of_consumption / global_var.df_Region_LA_buildings['Unnamed: 16'].where(
+                global_var.df_Region_LA_buildings['Local Authority'] == global_var.generated_data_row['Local Authority']).dropna().item()
+
+        elif  global_var.generated_data_row['Structure_Type'] == 'Warehouse':
+            percentage_of_consumption = x *  global_var.prob_array_structure[global_var.generated_data_row['Local Authority'].item()][3] /100
+            per_structure_consumption = percentage_of_consumption / global_var.df_Region_LA_buildings['Unnamed: 21'].where(
+                global_var.df_Region_LA_buildings['Local Authority'] == global_var.generated_data_row['Local Authority']).dropna().item()
+
+        else :
+            percentage_of_consumption = x *  global_var.prob_array_structure[global_var.generated_data_row['Local Authority'].item()][4] /100
+            per_structure_consumption = percentage_of_consumption / global_var.df_Region_LA_buildings['Unnamed: 26'].where(
+                global_var.df_Region_LA_buildings['Local Authority'] == global_var.generated_data_row['Local Authority']).dropna().item()
+            
+        # print(np.random.normal(loc=per_structure_consumption,scale=per_structure_consumption*10/100,size=1))
+        if per_structure_consumption < 0:
+                global_var.generated_data_row['Petrol_Consumption_By_Sector(toe)'] = 0
+        else:
+            y = np.random.normal(loc=per_structure_consumption,scale=per_structure_consumption*10/100,size=1)
+            global_var.generated_data_row['Petrol_Consumption_By_Sector(toe)'] = y.item()
+    
     # * * ----------------------------------------------------------------------- * * #
 
     def gen_NG_consumption(self): # //! Natural Gas
-        global_var.generated_data_row['NG_Consumption_By_Sector'] = np.random.choice(global_var.NG_consumption_sector_arr[global_var.generated_data_row['Section']])
-       
+        x = global_var.NG_consumption_sector_arr[global_var.generated_data_row['Section']]
+        x = np.random.choice(x)
+        # print(x)
+        y = ''
+        if global_var.generated_data_row['Structure_Type'] == 'Factory':
+            percentage_of_consumption = x *  global_var.prob_array_structure[global_var.generated_data_row['Local Authority'].item()][0] /100
+            per_structure_consumption = percentage_of_consumption / global_var.df_Region_LA_buildings['Unnamed: 6'].where(
+                global_var.df_Region_LA_buildings['Local Authority'] == global_var.generated_data_row['Local Authority']).dropna().item()
+
+        elif  global_var.generated_data_row['Structure_Type'] == 'Office':
+            percentage_of_consumption = x *  global_var.prob_array_structure[global_var.generated_data_row['Local Authority'].item()][1] /100
+            per_structure_consumption = percentage_of_consumption / global_var.df_Region_LA_buildings['Unnamed: 11'].where(
+                global_var.df_Region_LA_buildings['Local Authority'] == global_var.generated_data_row['Local Authority']).dropna().item()
+
+        elif  global_var.generated_data_row['Structure_Type'] == 'Shop':
+            percentage_of_consumption = x *  global_var.prob_array_structure[global_var.generated_data_row['Local Authority'].item()][2] /100
+            per_structure_consumption = percentage_of_consumption / global_var.df_Region_LA_buildings['Unnamed: 16'].where(
+                global_var.df_Region_LA_buildings['Local Authority'] == global_var.generated_data_row['Local Authority']).dropna().item()
+
+        elif  global_var.generated_data_row['Structure_Type'] == 'Warehouse':
+            percentage_of_consumption = x *  global_var.prob_array_structure[global_var.generated_data_row['Local Authority'].item()][3] /100
+            per_structure_consumption = percentage_of_consumption / global_var.df_Region_LA_buildings['Unnamed: 21'].where(
+                global_var.df_Region_LA_buildings['Local Authority'] == global_var.generated_data_row['Local Authority']).dropna().item()
+
+        else :
+            percentage_of_consumption = x *  global_var.prob_array_structure[global_var.generated_data_row['Local Authority'].item()][4] /100
+            per_structure_consumption = percentage_of_consumption / global_var.df_Region_LA_buildings['Unnamed: 26'].where(
+                global_var.df_Region_LA_buildings['Local Authority'] == global_var.generated_data_row['Local Authority']).dropna().item()
+
+        # print(np.random.normal(loc=per_structure_consumption,scale=per_structure_consumption*10/100,size=1))
+        if per_structure_consumption < 0:
+            global_var.generated_data_row['NG_Consumption_By_Sector(toe)'] = 0
+        else:
+            y = np.random.normal(loc=per_structure_consumption,scale=per_structure_consumption*10/100,size=1)
+            global_var.generated_data_row['NG_Consumption_By_Sector(toe)'] = y.item()
+
     # * * ----------------------------------------------------------------------- * * #
                 
     def gen_coal_consumption(self): # //! Coal
-        global_var.generated_data_row['Coal_Consumption_By_Sector'] = np.random.choice(global_var.coal_consumption_sector_arr[global_var.generated_data_row['Section']])
-       
+        x = global_var.coal_consumption_sector_arr[global_var.generated_data_row['Section']]
+        x = np.random.choice(x)
+        # print(x)
+        y = ''
+        if global_var.generated_data_row['Structure_Type'] == 'Factory':
+            percentage_of_consumption = x *  global_var.prob_array_structure[global_var.generated_data_row['Local Authority'].item()][0] /100
+            per_structure_consumption = percentage_of_consumption / global_var.df_Region_LA_buildings['Unnamed: 6'].where(
+                global_var.df_Region_LA_buildings['Local Authority'] == global_var.generated_data_row['Local Authority']).dropna().item()
+
+        elif  global_var.generated_data_row['Structure_Type'] == 'Office':
+            percentage_of_consumption = x *  global_var.prob_array_structure[global_var.generated_data_row['Local Authority'].item()][1] /100
+            per_structure_consumption = percentage_of_consumption / global_var.df_Region_LA_buildings['Unnamed: 11'].where(
+                global_var.df_Region_LA_buildings['Local Authority'] == global_var.generated_data_row['Local Authority']).dropna().item()
+
+        elif  global_var.generated_data_row['Structure_Type'] == 'Shop':
+            percentage_of_consumption = x *  global_var.prob_array_structure[global_var.generated_data_row['Local Authority'].item()][2] /100
+            per_structure_consumption = percentage_of_consumption / global_var.df_Region_LA_buildings['Unnamed: 16'].where(
+                global_var.df_Region_LA_buildings['Local Authority'] == global_var.generated_data_row['Local Authority']).dropna().item()
+
+        elif  global_var.generated_data_row['Structure_Type'] == 'Warehouse':
+            percentage_of_consumption = x *  global_var.prob_array_structure[global_var.generated_data_row['Local Authority'].item()][3] /100
+            per_structure_consumption = percentage_of_consumption / global_var.df_Region_LA_buildings['Unnamed: 21'].where(
+                global_var.df_Region_LA_buildings['Local Authority'] == global_var.generated_data_row['Local Authority']).dropna().item()
+
+        else :
+            percentage_of_consumption = x *  global_var.prob_array_structure[global_var.generated_data_row['Local Authority'].item()][4] /100
+            per_structure_consumption = percentage_of_consumption / global_var.df_Region_LA_buildings['Unnamed: 26'].where(
+                global_var.df_Region_LA_buildings['Local Authority'] == global_var.generated_data_row['Local Authority']).dropna().item()
+
+        # print(np.random.normal(loc=per_structure_consumption,scale=per_structure_consumption*10/100,size=1))
+        if per_structure_consumption < 0:
+            global_var.generated_data_row['Coal_Consumption_By_Sector(toe)'] = 0
+        else:
+            y = np.random.normal(loc=per_structure_consumption,scale=per_structure_consumption*10/100,size=1)
+            global_var.generated_data_row['Coal_Consumption_By_Sector(toe)'] = y.item()
+
     # * * ----------------------------------------------------------------------- * * #
 
     def gen_electricity_consumption(self): # //! Electricity

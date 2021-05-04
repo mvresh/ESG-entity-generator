@@ -29,7 +29,7 @@ class Petrol:
             model_fit = model.fit()
             # make prediction
             yhat = model_fit.predict(len(temp_arr), len(temp_arr))
-            prediction_temp_arr.append(yhat.item())
+            prediction_temp_arr.append(yhat.item()*1000000)
 
             # ? Exponential Smoothing
             # fit model
@@ -37,7 +37,7 @@ class Petrol:
             model_fit = model.fit()
             # make prediction
             yhat = model_fit.predict(len(temp_arr), len(temp_arr))
-            prediction_temp_arr.append(yhat.item())
+            prediction_temp_arr.append(yhat.item()*1000000)
 
             # ? Auto regression with moving average
             # fit model
@@ -45,12 +45,10 @@ class Petrol:
             model_fit = model.fit()
             # make prediction
             yhat = model_fit.predict(len(temp_arr), len(temp_arr))
-            prediction_temp_arr.append(yhat.item())
+            prediction_temp_arr.append(yhat.item()*1000000)
             
             global_var.ptrl_consumption_sector_arr[j] = prediction_temp_arr
         # print(global_var.ptrl_consumption_sector_arr)
-
-
 
 petrol_obj = Petrol()
 

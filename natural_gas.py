@@ -28,21 +28,21 @@ class NG:
             model_fit = model.fit()
             # make prediction
             yhat = model_fit.predict(len(temp_arr), len(temp_arr))
-            prediction_temp_arr.append(yhat.item())
+            prediction_temp_arr.append(yhat.item()*1000000)
 
             # fit model
             model = SimpleExpSmoothing(temp_arr)
             model_fit = model.fit()
             # make prediction
             yhat = model_fit.predict(len(temp_arr), len(temp_arr))
-            prediction_temp_arr.append(yhat.item())
+            prediction_temp_arr.append(yhat.item()*1000000)
 
             # fit model
             model = ARIMA(temp_arr, order=(0, 0, 1))
             model_fit = model.fit()
             # make prediction
             yhat = model_fit.predict(len(temp_arr), len(temp_arr))
-            prediction_temp_arr.append(yhat.item())
+            prediction_temp_arr.append(yhat.item()*1000000)
             
             global_var.NG_consumption_sector_arr[j] = prediction_temp_arr
         # print(global_var.NG_consumption_sector_arr)
