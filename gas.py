@@ -32,7 +32,14 @@ class Gas:
                     
                 global_var.df_per_structure_Gas_consumption = global_var.df_per_structure_Gas_consumption.append(temp2_df,ignore_index=True)
 
-   
+    
+    def gen_gas_consumption(self): # //! Gas Consumption generator function
+        x = global_var.df_per_structure_Gas_consumption['consumption_per_structure'][(global_var.df_per_structure_Gas_consumption['County'] == global_var.generated_data_row['Local Authority']) &
+        (global_var.df_per_structure_Gas_consumption['Structure'] == global_var.generated_data_row['Structure_Type'])].values
+        global_var.generated_data_row['Gas_Consumption_By_Structure'] = np.random.normal(loc=x, scale=x*10/100, size=1).item()   
+            
+    # * * ----------------------------------------------------------------------- * * #
+
 # EG_obj = EG()
 
 # EG_obj.gen_electricity_structural_consumption()

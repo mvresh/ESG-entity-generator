@@ -7,7 +7,7 @@ import global_var
 # enitity_ele.generate_data_from_input()
 
 class EG:
-    def gen_electricity_structural_consumption(self): # //! Electricity by Floor Area
+    def gen_electricity_structural_consumption(self): # //! Electricity by Floor Area Dataframe
 
         temp_struture_array = ['Factory','Office','Shop','Warehouse','Other']
         empty_var = []
@@ -35,8 +35,15 @@ class EG:
                     
                 global_var.df_per_structure_consumption = global_var.df_per_structure_consumption.append(temp_df,ignore_index=True)
 
+        
+        # global_var.df_per_structure_consumption.to_excel('per_structure_consumption.xlsx')
 
-
+    def gen_electricity_consumption(self): # //! Electricity Consumption generator function
+        x = global_var.df_per_structure_consumption['consumption_per_structure'][(global_var.df_per_structure_consumption['County'] == global_var.generated_data_row['Local Authority']) &
+        (global_var.df_per_structure_consumption['Structure'] == global_var.generated_data_row['Structure_Type'])].values
+        global_var.generated_data_row['Electricity_Consumption_By_Structure'] = np.random.normal(loc=x, scale=x*10/100, size=1).item()   
+            
+    # * * ----------------------------------------------------------------------- * * #
 # EG_obj = EG()
 
 # EG_obj.gen_electricity_structural_consumption()

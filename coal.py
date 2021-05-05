@@ -45,6 +45,45 @@ class Coal:
             global_var.coal_consumption_sector_arr[j] = prediction_temp_arr
         # print(global_var.coal_consumption_sector_arr)
 
+    def gen_coal_consumption(self): # //! Coal
+        x = global_var.coal_consumption_sector_arr[global_var.generated_data_row['Section']]
+        x = np.random.choice(x)
+        # print(x)
+        y = ''
+        if global_var.generated_data_row['Structure_Type'] == 'Factory':
+            percentage_of_consumption = x *  global_var.prob_array_structure[global_var.generated_data_row['Local Authority'].item()][0] /100
+            per_structure_consumption = percentage_of_consumption / global_var.df_Region_LA_buildings['Unnamed: 6'].where(
+                global_var.df_Region_LA_buildings['Local Authority'] == global_var.generated_data_row['Local Authority']).dropna().item()
+
+        elif  global_var.generated_data_row['Structure_Type'] == 'Office':
+            percentage_of_consumption = x *  global_var.prob_array_structure[global_var.generated_data_row['Local Authority'].item()][1] /100
+            per_structure_consumption = percentage_of_consumption / global_var.df_Region_LA_buildings['Unnamed: 11'].where(
+                global_var.df_Region_LA_buildings['Local Authority'] == global_var.generated_data_row['Local Authority']).dropna().item()
+
+        elif  global_var.generated_data_row['Structure_Type'] == 'Shop':
+            percentage_of_consumption = x *  global_var.prob_array_structure[global_var.generated_data_row['Local Authority'].item()][2] /100
+            per_structure_consumption = percentage_of_consumption / global_var.df_Region_LA_buildings['Unnamed: 16'].where(
+                global_var.df_Region_LA_buildings['Local Authority'] == global_var.generated_data_row['Local Authority']).dropna().item()
+
+        elif  global_var.generated_data_row['Structure_Type'] == 'Warehouse':
+            percentage_of_consumption = x *  global_var.prob_array_structure[global_var.generated_data_row['Local Authority'].item()][3] /100
+            per_structure_consumption = percentage_of_consumption / global_var.df_Region_LA_buildings['Unnamed: 21'].where(
+                global_var.df_Region_LA_buildings['Local Authority'] == global_var.generated_data_row['Local Authority']).dropna().item()
+
+        else :
+            percentage_of_consumption = x *  global_var.prob_array_structure[global_var.generated_data_row['Local Authority'].item()][4] /100
+            per_structure_consumption = percentage_of_consumption / global_var.df_Region_LA_buildings['Unnamed: 26'].where(
+                global_var.df_Region_LA_buildings['Local Authority'] == global_var.generated_data_row['Local Authority']).dropna().item()
+
+        # print(np.random.normal(loc=per_structure_consumption,scale=per_structure_consumption*10/100,size=1))
+        if per_structure_consumption < 0:
+            global_var.generated_data_row['Coal_Consumption_By_Sector(toe)'] = 0
+        else:
+            y = np.random.normal(loc=per_structure_consumption,scale=per_structure_consumption*10/100,size=1)
+            global_var.generated_data_row['Coal_Consumption_By_Sector(toe)'] = y.item()
+
+    # * * ----------------------------------------------------------------------- * * #
+
 
 
 Coal_obj = Coal()
