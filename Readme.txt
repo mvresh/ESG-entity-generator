@@ -14,7 +14,7 @@ Petrol / Natural Gas / Coal
 Consumption Calculations     
 =     
 Per county consumption	=   Total consumption for petrol * County percentage
-Per structure consumption =  per county consumption * strcuture percentage
-
+overall structure consumption =  per county consumption * strcuture percentage
+per_structure consumption = overall structure consumption / structure count
 
 
