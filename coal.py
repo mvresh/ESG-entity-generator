@@ -11,7 +11,7 @@ from random import random
 class Coal:
     def gen_prediction_arr_coal(self):
         print()
-        coal_Fuel_df = pd.read_excel('coal_by_industry.xls')
+        coal_Fuel_df = pd.read_excel('source_files\coal_by_industry.xls')
         temp_df = coal_Fuel_df[coal_Fuel_df.columns.difference(['Section', 'Sector'])].dropna()
         
         

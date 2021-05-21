@@ -40,12 +40,12 @@ class Entity:
     # Function to load all the dataset files
     def initial_data_loading(self):  
         print('initial data loading...')
-        global_var.df_Region_LA_buildings = pd.read_excel('Region_LA_buildings.xlsx')
+        global_var.df_Region_LA_buildings = pd.read_excel('source_files\\Region_LA_buildings.xlsx')
         global_var.dfLA = global_var.df_Region_LA_buildings['Local Authority'].dropna()
         global_var.df_Region = global_var.df_Region_LA_buildings['Region'].dropna()
-        global_var.df_district_data = pd.read_excel('ONSData6DistrictLevel.xlsx')
-        global_var.df_SIC_Codes = pd.read_csv('SIC07_CH_condensed_list_en.csv')
-        global_var.df_EG = pd.read_excel('electricity and gas consumption by Local authority.xlsx')
+        global_var.df_district_data = pd.read_excel('source_files\\ONSData6DistrictLevel.xlsx')
+        global_var.df_SIC_Codes = pd.read_csv('source_files\\SIC07_CH_condensed_list_en.csv')
+        global_var.df_EG = pd.read_excel('source_files\\electricity and gas consumption by Local authority.xlsx')
 
         Region_County_obj.dictionary_Region_LA(global_var.df_Region,global_var.dfLA)
         ptrl_obj.gen_prediction_arr_petrol()
@@ -100,7 +100,7 @@ class Entity:
                 print("",end = '\r')
 
             #Writing Dataframe into Excel file
-            global_var.Final_dataframe.to_excel('ESG-generated-data.xlsx')
+            global_var.Final_dataframe.to_excel('Generated_data\ESG-generated-data.xlsx')
             
            
         app.addButtons(["Submit"], press)

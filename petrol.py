@@ -13,7 +13,7 @@ from random import random
 class Petrol:
     
     def gen_prediction_arr_petrol(self):
-        Fuel_df = pd.read_excel('Petrol_by _industry.xls')
+        Fuel_df = pd.read_excel('source_files\Petrol_by _industry.xls')
         temp_df = Fuel_df[Fuel_df.columns.difference(['Section', 'Sector'])].dropna()
         
         for j in Fuel_df['Section'].dropna():

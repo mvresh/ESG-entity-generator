@@ -33,12 +33,12 @@ class SIC:
         #SIC selected according to row input (row was selected by location)
         sic_range = np.random.choice(listOfSICS, p=probabilityArraySIC)
         # Company Sector
-        Final_Sector = sic_range.split(':')[1]
+        Final_Sector = sic_range.split(':')[1].strip()
         # print('Company Sector : ',Final_Sector)
         global_var.generated_data_row['Sector'] = Final_Sector
 
         # Company Sic Group
-        Final_SicGroup = sic_range.split(':')[0]
+        Final_SicGroup = sic_range.split(':')[0].strip()
         global_var.generated_data_row['SIC Group'] = Final_SicGroup
         
         if '-' in sic_range.split(':')[0]:

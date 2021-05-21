@@ -13,7 +13,7 @@ from random import random
 class NG:
     def gen_prediction_arr_NG(self):
         print()
-        NG_Fuel_df = pd.read_excel('Natural_Gas_by_industry.xlsx')
+        NG_Fuel_df = pd.read_excel("source_files\\Natural_Gas_by_industry.xlsx")
         temp_df = NG_Fuel_df[NG_Fuel_df.columns.difference(['Section', 'Sector'])].dropna()
         
         

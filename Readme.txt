@@ -26,7 +26,7 @@ Unique ID
 Region and Loca Authority 
 
 'Region' is distributed according to the probability of regions in Source dataset
-'Local Authority' is randomly chosen according to the generated 'Region' 
+'Local Authority' is randomly chosen according to the generated 'Region' // Will be changing to probability matrix generateion
 
 
 ----------------------------------------------------------------------------------------
