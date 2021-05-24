@@ -57,17 +57,25 @@ generated according to it.
 ----------------------------------------------------------------------------------------
 Electricity and Gas    
 
-Per Structure consumption = Total consumption by Local Authority / Structure count in Local
-'Per structure consumption' is normally distributed accoding to structure type
+Percentage of structure = Structure count  / Total count
 
+total consumption by any structure = total consumtion in LA * Percentage of structure 
+
+per structure consumption = total consumption by any structure / count of structure
+
+"Per structure consumption' is normally distributed accoding to structure type"
 
 ----------------------------------------------------------------------------------------
 Petrol / Natural Gas / CoalConsumption Calculations     
 
 Total consumption for petrol = forecasted value using data from 1990 - 2018 (by sextor)
-county percentage = 
+
 Per county consumption	=   Total consumption for petrol * County percentage
-overall structure consumption =  per county consumption * strcuture percentage
+
+strcuture percentage = structure count / county total structure count
+
+total consumption by any structure =  per county consumption * strcuture percentage
+
 per_structure consumption = overall structure consumption / structure count
 
 'Per structure consumption' is normally distributed accoding to structure type

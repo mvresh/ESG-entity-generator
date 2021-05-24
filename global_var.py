@@ -10,6 +10,7 @@ df_Region = ''
 df_per_structure_consumption = ''
 df_per_structure_Gas_consumption = ''
 df_EG = ''
+df_petrol_consumption_per_county = ''
 
 # Generated Data Row
 generated_data_row = {}
@@ -33,6 +34,8 @@ prob_array_region = [
                     ]
 
 prob_array_structure = {}
+
+prob_array_county = {}
 
 # Consumption by floor area array
 consumption_array = []

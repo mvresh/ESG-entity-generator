@@ -48,7 +48,7 @@ class Petrol:
             
             global_var.ptrl_consumption_sector_arr[j] = prediction_temp_arr
         # print(global_var.ptrl_consumption_sector_arr)
-
+        
 
     def gen_petrol_consumption(self): # //! Petrol Consumption generator function
         generated_LA = global_var.generated_data_row['Local Authority']
@@ -58,30 +58,56 @@ class Petrol:
         y = ''
         if global_var.generated_data_row['Structure_Type'] == 'Factory':
             county_consumption = x *  global_var.df_Region_LA_buildings['Unnamed: 30'].where(global_var.df_Region_LA_buildings['Local Authority']== generated_LA).dropna().item()
-            overall_structure_consumption = county_consumption *  global_var.prob_array_structure[generated_LA.item()][0]
+
+            structure_percentage = (global_var.df_Region_LA_buildings['Unnamed: 6'].where(global_var.df_Region_LA_buildings['Local Authority'] == generated_LA).dropna().item() 
+                                    / global_var.df_Region_LA_buildings['Unnamed: 31'].where(global_var.df_Region_LA_buildings['Local Authority']== generated_LA).dropna().item())
+
+            overall_structure_consumption = county_consumption *  structure_percentage
+
             per_structure_consumption = overall_structure_consumption / global_var.df_Region_LA_buildings['Unnamed: 6'].where(
                 global_var.df_Region_LA_buildings['Local Authority'] == generated_LA).dropna().item()
 
         elif  global_var.generated_data_row['Structure_Type'] == 'Office':
             county_consumption = x *  global_var.df_Region_LA_buildings['Unnamed: 30'].where(global_var.df_Region_LA_buildings['Local Authority']== generated_LA).dropna().item()
-            overall_structure_consumption = county_consumption *  global_var.prob_array_structure[generated_LA.item()][1]
+            
+            structure_percentage = (global_var.df_Region_LA_buildings['Unnamed: 11'].where(global_var.df_Region_LA_buildings['Local Authority'] == generated_LA).dropna().item() 
+                                    / global_var.df_Region_LA_buildings['Unnamed: 31'].where(global_var.df_Region_LA_buildings['Local Authority']== generated_LA).dropna().item())
+
+            overall_structure_consumption = county_consumption *  structure_percentage
+
             per_structure_consumption = overall_structure_consumption / global_var.df_Region_LA_buildings['Unnamed: 11'].where(
                 global_var.df_Region_LA_buildings['Local Authority'] == generated_LA).dropna().item()
 
         elif  global_var.generated_data_row['Structure_Type'] == 'Shop':
             county_consumption = x *  global_var.df_Region_LA_buildings['Unnamed: 30'].where(global_var.df_Region_LA_buildings['Local Authority']== generated_LA).dropna().item()
-            overall_structure_consumption = county_consumption *  global_var.prob_array_structure[generated_LA.item()][2]
+            
+            structure_percentage = (global_var.df_Region_LA_buildings['Unnamed: 16'].where(global_var.df_Region_LA_buildings['Local Authority'] == generated_LA).dropna().item() 
+                                    / global_var.df_Region_LA_buildings['Unnamed: 31'].where(global_var.df_Region_LA_buildings['Local Authority']== generated_LA).dropna().item())
+
+            overall_structure_consumption = county_consumption *  structure_percentage
+
             per_structure_consumption = overall_structure_consumption / global_var.df_Region_LA_buildings['Unnamed: 16'].where(
                 global_var.df_Region_LA_buildings['Local Authority'] == generated_LA).dropna().item()
 
         elif  global_var.generated_data_row['Structure_Type'] == 'Warehouse':
             county_consumption = x *  global_var.df_Region_LA_buildings['Unnamed: 30'].where(global_var.df_Region_LA_buildings['Local Authority']== generated_LA).dropna().item()
-            overall_structure_consumption = county_consumption *  global_var.prob_array_structure[generated_LA.item()][3]
+            
+            structure_percentage = (global_var.df_Region_LA_buildings['Unnamed: 21'].where(global_var.df_Region_LA_buildings['Local Authority'] == generated_LA).dropna().item() 
+                                    / global_var.df_Region_LA_buildings['Unnamed: 31'].where(global_var.df_Region_LA_buildings['Local Authority']== generated_LA).dropna().item())
+
+            overall_structure_consumption = county_consumption *  structure_percentage
+
             per_structure_consumption = overall_structure_consumption / global_var.df_Region_LA_buildings['Unnamed: 21'].where(
                 global_var.df_Region_LA_buildings['Local Authority'] == generated_LA).dropna().item()
+
         else :
             county_consumption = x *  global_var.df_Region_LA_buildings['Unnamed: 30'].where(global_var.df_Region_LA_buildings['Local Authority']== generated_LA).dropna().item()
-            overall_structure_consumption = county_consumption *  global_var.prob_array_structure[generated_LA.item()][4]
+            
+            structure_percentage = (global_var.df_Region_LA_buildings['Unnamed: 26'].where(global_var.df_Region_LA_buildings['Local Authority'] == generated_LA).dropna().item() 
+                                    / global_var.df_Region_LA_buildings['Unnamed: 31'].where(global_var.df_Region_LA_buildings['Local Authority']== generated_LA).dropna().item())
+
+            overall_structure_consumption = county_consumption *  structure_percentage
+
             per_structure_consumption = overall_structure_consumption / global_var.df_Region_LA_buildings['Unnamed: 26'].where(
                 global_var.df_Region_LA_buildings['Local Authority'] == generated_LA).dropna().item()
             

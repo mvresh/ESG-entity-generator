@@ -48,9 +48,12 @@ class Entity:
         global_var.df_EG = pd.read_excel('source_files\\electricity and gas consumption by Local authority.xlsx')
 
         Region_County_obj.dictionary_Region_LA(global_var.df_Region,global_var.dfLA)
+        Region_County_obj.generate_probArray_county()
+
         ptrl_obj.gen_prediction_arr_petrol()
         NG_obj.gen_prediction_arr_NG()
         coal_obj.gen_prediction_arr_coal()
+
         ele_obj.gen_electricity_structural_consumption()
         gas_obj.gen_Gas_structural_consumption()
         structure_obj.probability_array_structure()
@@ -67,8 +70,8 @@ class Entity:
         'Petrol_Consumption_By_Sector(toe)',
         'NG_Consumption_By_Sector(toe)',
         'Coal_Consumption_By_Sector(toe)',
-        'Electricity_Consumption_By_Structure',
-        'Gas_Consumption_By_Structure'])
+        'Electricity_Consumption_By_Structure(toe)',
+        'Gas_Consumption_By_Structure(toe)'])
 
         print('Initial data loaded successfully.')
     
